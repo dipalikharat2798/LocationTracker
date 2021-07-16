@@ -4,14 +4,18 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
 import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
@@ -26,6 +30,7 @@ RadioGroup radiogroup;
 Button tackmaproute,myRoute,start,stop;
 static Boolean value;
 private static final int REQUEST_CODE_LOCATION_PERMISSION = 1;
+    WifiLevelReceiver receiver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +42,9 @@ private static final int REQUEST_CODE_LOCATION_PERMISSION = 1;
         radiogroup=(RadioGroup)findViewById(R.id.radio_group);
         start=findViewById(R.id.start);
         stop=findViewById(R.id.stopser);
+
+        receiver = new WifiLevelReceiver();
+        registerReceiver(receiver, new IntentFilter("GET_SIGNAL_STRENGTH"));
 
         start.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,11 +121,31 @@ private static final int REQUEST_CODE_LOCATION_PERMISSION = 1;
     }
 
     private void stopLocationService(){
-        if (! isLocationServiceRunning()){
+        if (isLocationServiceRunning()){
             Intent intent=new Intent(getApplicationContext(),LocationService.class);
             intent.setAction(Constants.ACTION_STOP_SERVICE);
             startService(intent);
             Toast.makeText(this, "Location Service stopped", Toast.LENGTH_SHORT).show();
         }
+    }
+    class WifiLevelReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            if(intent.getAction().equals("GET_SIGNAL_STRENGTH"))
+            {
+                int level = intent.getIntExtra("LEVEL_DATA",0);
+                Toast.makeText(context, ""+level, Toast.LENGTH_SHORT).show();
+                // Show it in GraphView
+            }
+        }
+
+    }
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        unregisterReceiver(receiver);           //<-- Unregister to avoid memoryleak
     }
 }
