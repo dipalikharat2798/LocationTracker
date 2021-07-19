@@ -13,17 +13,33 @@
     android:layout_centerInParent="true">
 
     <TextView
-        android:id="@+id/speed"
-        android:layout_width="205dp"
-        android:layout_height="218dp"
+        android:id="@+id/speed_tv"
+        android:layout_width="244dp"
+        android:layout_height="224dp"
         android:layout_gravity="center"
         android:layout_margin="8dp"
         android:background="@drawable/firstbg"
         android:gravity="center"
-        android:textSize="80dp"
-        android:hint="0"
+        android:text="0"
         android:textColor="@color/black"
+        android:textSize="40dp"
         android:textStyle="bold" />
+<!--    <FrameLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="315dp"-->
+<!--        android:layout_weight="1">-->
+
+<!--        <in.unicodelabs.kdgaugeview.KdGaugeView-->
+<!--            android:id="@+id/speedMeter"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="center"-->
+<!--            app:animationTime="2000"-->
+<!--            app:maxSpeed="180"-->
+<!--            app:minSpeed="0"-->
+<!--            app:speed="100"-->
+<!--            app:speed_limit="90" />-->
+<!--    </FrameLayout>-->
     <RadioGroup
         android:id="@+id/radio_group"
         android:layout_width="match_parent"
@@ -34,27 +50,24 @@
         android:layout_above="@+id/view_below" >
 
         <RadioButton
-            android:id="@+id/radio1"
+            android:id="@+id/milesradio_btn"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:checked="true"
-            android:onClick="Button1"
-            android:text="Miles/Hours" />
-
-        <RadioButton
-            android:id="@+id/radio2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:onClick="Button2"
             android:text="Km/Hours" />
 
         <RadioButton
-            android:id="@+id/radio3"
+            android:id="@+id/kmradio_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Miles/Hours" />
+
+        <RadioButton
+            android:id="@+id/meterradio_btn"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:onClick="Button3"
             android:layout_height="wrap_content"
             android:text="M/Hours" />
     </RadioGroup>
@@ -75,7 +88,7 @@
             android:textStyle="bold"
             android:layout_height="wrap_content"/>
         <TextView
-            android:id="@+id/startcor"
+            android:id="@+id/startcor_tv"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:padding="8dp"
@@ -103,7 +116,7 @@
             android:textStyle="bold"
             android:layout_height="wrap_content"/>
         <TextView
-            android:id="@+id/stopcor"
+            android:id="@+id/stopcor_tv"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:gravity="center"
@@ -131,7 +144,7 @@
             android:textStyle="bold"
             android:layout_height="wrap_content"/>
         <TextView
-            android:id="@+id/distance"
+            android:id="@+id/distance_tv"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:gravity="center"
@@ -144,7 +157,7 @@
 
     </LinearLayout>
     <Button
-        android:id="@+id/tractmaploc"
+        android:id="@+id/tracMapLocaton_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -159,7 +172,7 @@
         android:layout_margin="4dp"
         android:weightSum="2">
         <Button
-            android:id="@+id/stopser"
+            android:id="@+id/stopservice_btn"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:gravity="center"
@@ -170,7 +183,7 @@
             android:padding="8dp"
             android:text="Stop"/>
         <Button
-            android:id="@+id/start"
+            android:id="@+id/startservice_btn"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:gravity="center"

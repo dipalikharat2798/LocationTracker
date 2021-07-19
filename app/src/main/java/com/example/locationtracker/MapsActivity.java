@@ -29,31 +29,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        LatLng m1 = new LatLng(20,40);
-        LatLng m2 = new LatLng(25,45);
-        LatLng m3 = new LatLng(30,50);
-        LatLng m4 = new LatLng(35,55);
-        LatLng m5 = new LatLng(40,60);
+        LatLng m1 = new LatLng(20, 40);
+        LatLng m2 = new LatLng(25, 45);
+        LatLng m3 = new LatLng(30, 50);
+        LatLng m4 = new LatLng(35, 55);
+        LatLng m5 = new LatLng(40, 60);
 
         // Add a marker in Sydney and move the camera
 //        LatLng sydney = new LatLng(-34, 151);
 //        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
-        marker=mMap.addMarker(new MarkerOptions().
+        marker = mMap.addMarker(new MarkerOptions().
                 position(m1)
                 .title("My Marker")
                 .draggable(true)
@@ -68,5 +59,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .add(m5);
         Polyline polyline = mMap.addPolyline(rectOption);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(m1));
+
+//        List<LatLng> points = decodePoly(_path); // list of latlng
+//        for (int i = 0; i < points.size() - 1; i++) {
+//            LatLng src = points.get(i);
+//            LatLng dest = points.get(i + 1);
+//
+//            // mMap is the Map Object
+//            Polyline line = mMap.addPolyline(
+//                    new PolylineOptions().add(
+//                            new LatLng(src.latitude, src.longitude),
+//                            new LatLng(dest.latitude,dest.longitude)
+//                    ).width(2).color(Color.BLUE).geodesic(true)
+//            );
+//        }
+
+       // https://stackoverflow.com/questions/16311076/how-to-dynamically-add-polylines-from-an-arraylist
     }
 }
