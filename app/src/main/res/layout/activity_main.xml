@@ -4,195 +4,102 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:layout_margin="8dp"
-    android:layout_centerInParent="true">
+    tools:context=".activities.MainActivity">
 
-    <TextView
-        android:id="@+id/speed_tv"
-        android:layout_width="244dp"
-        android:layout_height="224dp"
-        android:layout_gravity="center"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
         android:layout_margin="8dp"
-        android:background="@drawable/firstbg"
-        android:gravity="center"
-        android:text="0"
-        android:textColor="@color/black"
-        android:textSize="40dp"
-        android:textStyle="bold" />
-<!--    <FrameLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="315dp"-->
-<!--        android:layout_weight="1">-->
+        android:orientation="vertical">
 
-<!--        <in.unicodelabs.kdgaugeview.KdGaugeView-->
-<!--            android:id="@+id/speedMeter"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_gravity="center"-->
-<!--            app:animationTime="2000"-->
-<!--            app:maxSpeed="180"-->
-<!--            app:minSpeed="0"-->
-<!--            app:speed="100"-->
-<!--            app:speed_limit="90" />-->
-<!--    </FrameLayout>-->
-    <RadioGroup
-        android:id="@+id/radio_group"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="10dp"
-        android:weightSum="3"
-        android:layout_above="@+id/view_below" >
+        <TextView
+            android:id="@+id/speed_tv"
+            android:layout_width="244dp"
+            android:layout_height="224dp"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:background="@drawable/firstbg"
+            android:gravity="center"
+            android:text="0"
+            android:textColor="@color/black"
+            android:textSize="40dp"
+            android:textStyle="bold" />
 
-        <RadioButton
-            android:id="@+id/milesradio_btn"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+        <RadioGroup
+            android:id="@+id/radio_group"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="Km/Hours" />
+            android:layout_above="@+id/view_below"
+            android:layout_margin="10dp"
+            android:orientation="horizontal"
+            android:weightSum="3">
 
-        <RadioButton
-            android:id="@+id/kmradio_btn"
-            android:layout_width="0dp"
+            <RadioButton
+                android:id="@+id/milesradio_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:checked="true"
+                android:text="Miles/Hr" />
+
+            <RadioButton
+                android:id="@+id/kmradio_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Km/Hr" />
+
+            <RadioButton
+                android:id="@+id/meterradio_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Meter/Hr" />
+        </RadioGroup>
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Miles/Hours" />
+            android:layout_margin="4dp"
+            android:orientation="horizontal"
+            android:weightSum="2">
 
-        <RadioButton
-            android:id="@+id/meterradio_btn"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="M/Hours" />
-    </RadioGroup>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="4dp"
-        android:weightSum="2">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="20dp"
-            android:padding="8dp"
-            android:text="Start"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:id="@+id/startcor_tv"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:padding="8dp"
-            android:gravity="center"
-            android:textSize="20dp"
-            android:hint="Start Coordinate"
-            android:textColor="@color/black"
-            android:textStyle="italic"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="4dp"
-        android:weightSum="2">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="20dp"
-            android:text="Last"
-            android:padding="8dp"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:id="@+id/stopcor_tv"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="20dp"
-            android:hint="Stop Coordinate"
-            android:padding="8dp"
-            android:textColor="@color/black"
-            android:textStyle="italic"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="4dp"
-        android:weightSum="2">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="20dp"
-            android:text="Distance"
-            android:textColor="@color/black"
-            android:padding="8dp"
-            android:textStyle="bold"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:id="@+id/distance_tv"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="20dp"
-            android:hint="Distance Covered"
-            android:textColor="@color/black"
-            android:padding="8dp"
-            android:textStyle="italic"
-            android:layout_height="wrap_content"/>
+            <Button
+                android:id="@+id/myroutes_btn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="My Routes"
+                android:textSize="20dp" />
 
-    </LinearLayout>
-    <Button
-        android:id="@+id/tracMapLocaton_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:textSize="20dp"
-        android:padding="8dp"
-        android:layout_margin="4dp"
-        android:text="Track My Route"/>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="4dp"
-        android:weightSum="2">
+            <Button
+                android:id="@+id/track_btn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="Track"
+                android:textSize="20dp" />
+        </LinearLayout>
+
         <Button
-            android:id="@+id/stopservice_btn"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="20dp"
+            android:id="@+id/startstop_btn"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="4dp"
             android:padding="8dp"
-            android:text="Stop"/>
-        <Button
-            android:id="@+id/startservice_btn"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="20dp"
-            android:padding="8dp"
-            android:layout_margin="4dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Start"/>
+            android:text="start"
+            android:textSize="20dp" />
     </LinearLayout>
-</LinearLayout>
 </RelativeLayout>

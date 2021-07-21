@@ -1,10 +1,4 @@
-package com.example.locationtracker;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+package com.example.locationtracker.activities;
 
 import android.Manifest;
 import android.app.ActivityManager;
@@ -13,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -23,24 +16,43 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.example.locationtracker.Database.LocationDBHelper;
+import com.example.locationtracker.R;
+import com.example.locationtracker.constants.LocationConstants;
+import com.example.locationtracker.services.LocationService;
+import com.example.locationtracker.utility.Utility;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, RadioGroup.OnCheckedChangeListener {
     private static final String TAG = "MainActivity";
-    TextView startcor_tv, stopcor_tv, distance_tv, speed_tv;
+    TextView speed_tv;
     RadioGroup radiogroup_btn;
-    Button tackmaproute_btn, myRoute_btn, startservice_btn, stopservice_btn;
+    RadioButton milesradio_btn, kmradio_btn, meterradio_btn;
+    Button startstop_btn, myRoute_btn, track_btn, myroutes_btn;
     private static final int REQUEST_CODE_LOCATION_PERMISSION = 1;
     double speed;
     LocationDBHelper locationDBHelper;
+    String mConvertionUnit="";
+
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            speed = intent.getDoubleExtra("Speed", 0.00);
-            String text = speed_tv.getText().toString();
-            Log.d(TAG, "onReceive: " + text);
+            speed = intent.getDoubleExtra("SPEED", 0.00);
+            Log.d(TAG, "onReceive: " + speed);
+            if (mConvertionUnit.equalsIgnoreCase("meters")) {
+                speed_tv.setText(String.valueOf(Utility.getSpeedInMeters(speed)));
+            } else if (mConvertionUnit.equalsIgnoreCase("Kilometers")) {
+                speed_tv.setText(String.valueOf(Utility.getSpeedInKm(speed)));
+            } else if (mConvertionUnit.equalsIgnoreCase("Miles")) {
+                speed_tv.setText(String.valueOf(Utility.getSpeedInMiles(speed)));
+            }
         }
     };
 
@@ -49,74 +61,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         speed_tv = findViewById(R.id.speed_tv);
-        startcor_tv = findViewById(R.id.startcor_tv);
-        stopcor_tv = findViewById(R.id.stopcor_tv);
-        distance_tv = findViewById(R.id.distance_tv);
         radiogroup_btn = (RadioGroup) findViewById(R.id.radio_group);
-        startservice_btn = findViewById(R.id.startservice_btn);
-        stopservice_btn = findViewById(R.id.stopservice_btn);
-        tackmaproute_btn = findViewById(R.id.tracMapLocaton_btn);
-
+        radiogroup_btn.setOnCheckedChangeListener(this);
+        track_btn = findViewById(R.id.track_btn);
+        track_btn.setOnClickListener(this);
+        myroutes_btn = findViewById(R.id.myroutes_btn);
+        myroutes_btn.setOnClickListener(this);
+        startstop_btn = findViewById(R.id.startstop_btn);
+        startstop_btn.setOnClickListener(this);
+        milesradio_btn = findViewById(R.id.milesradio_btn);
+        kmradio_btn = findViewById(R.id.kmradio_btn);
+        meterradio_btn = findViewById(R.id.meterradio_btn);
         locationDBHelper = LocationDBHelper.getInstance(MainActivity.this);
+    }
 
-        getData();
-
-        radiogroup_btn.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                RadioButton rb = (RadioButton) findViewById(checkedId);
-                //Toast.makeText(MainActivity.this, ""+rb, Toast.LENGTH_SHORT).show();
-                View radioButton = radiogroup_btn.findViewById(checkedId);
-                int index = radiogroup_btn.indexOfChild(radioButton);
-
-                // Add logic here
-
-                switch (index) {
-                    case 0: // first button
-                        String stringdouble = Double.toString(speed);
-                        speed_tv.setText(stringdouble);
-                        Toast.makeText(getApplicationContext(), "Selected button number " + index, Toast.LENGTH_SHORT).show();
-                        break;
-                    case 1: // secondbutton
-                        double speedinMiles = speed * 2.23694;
-                        stringdouble = Double.toString(speedinMiles);
-                        speed_tv.setText(stringdouble);
-                        Toast.makeText(getApplicationContext(), "Selected button number " + index, Toast.LENGTH_SHORT).show();
-                        break;
-                    case 2: // secondbutton
-                        double speedm = speed * 18 / 5;
-                        stringdouble = Double.toString(speedm);
-                        speed_tv.setText(stringdouble);
-                        Toast.makeText(getApplicationContext(), "Selected button number " + index, Toast.LENGTH_SHORT).show();
-                        break;
-                }
-            }
-        });
-
-        startservice_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (ContextCompat.checkSelfPermission(
-                        getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(MainActivity.this,
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                            REQUEST_CODE_LOCATION_PERMISSION);
-
-                } else {
-                    startLocationService();
-                }
-            }
-        });
-        stopservice_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                stopLocationService();
-                // getApplicationContext().stopService(new Intent(MainActivity.this,LocationService.class));
-            }
-        });
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (isLocationServiceRunning()) {
+            startstop_btn.setText("Stop");
+        }
     }
 
     @Override
@@ -129,24 +93,6 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    public void Button1(View view) {
-        double speedinMiles = speed * 2.23694;
-        String stringdouble = Double.toString(speedinMiles);
-        speed_tv.setText(stringdouble);
-
-    }
-
-    public void Button2(View view) {
-        String stringdouble = Double.toString(speed);
-        speed_tv.setText(stringdouble);
-    }
-
-    public void Button3(View view) {
-        double speedm = speed * 18 / 5;
-        String stringdouble = Double.toString(speedm);
-        speed_tv.setText(stringdouble);
     }
 
     private boolean isLocationServiceRunning() {
@@ -167,8 +113,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void startLocationService() {
         if (!isLocationServiceRunning()) {
+            Utility.saveDataToPreferences(MainActivity.this);
             Intent intent = new Intent(getApplicationContext(), LocationService.class);
-            intent.setAction(Constants.ACTION_START_SERVICE);
+            intent.setAction(LocationConstants.ACTION_START_SERVICE);
             startService(intent);
             Toast.makeText(this, "Location Service started", Toast.LENGTH_SHORT).show();
         }
@@ -177,8 +124,7 @@ public class MainActivity extends AppCompatActivity {
     private void stopLocationService() {
         if (isLocationServiceRunning()) {
             Intent intent = new Intent(getApplicationContext(), LocationService.class);
-            intent.setAction(Constants.ACTION_STOP_SERVICE);
-            startService(intent);
+            stopService(intent);
             Toast.makeText(this, "Location Service stopped", Toast.LENGTH_SHORT).show();
         }
     }
@@ -195,17 +141,75 @@ public class MainActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(mReceiver);        //<-- Unregister to avoid memoryleak
     }
 
-    private void getData() {
-        List<String[]> distinctRoutes = locationDBHelper.getDistinctRoutes();
-        for (int i = 0; i < distinctRoutes.size(); i++) {
-            Log.d(TAG, "getData: " + distinctRoutes.get(i)[0]);
+//    private void getData() {
+//        List<String[]> distinctRoutes = locationDBHelper.getDistinctRoutes();
+//        for (int i = 0; i < distinctRoutes.size(); i++) {
+//            Log.d(TAG, "getData: " + distinctRoutes.get(i)[0]);
+//        }
+//    }
+//
+//    private void getRouteData() {
+//        List<String[]> distinctRoutes = locationDBHelper.getRouteCoordinates("");
+//        for (int i = 0; i < distinctRoutes.size(); i++) {
+//            Log.d(TAG, "getData: " + distinctRoutes.get(i)[0]);
+//        }
+//    }
+
+    @Override
+    public void onClick(View v) {
+        Intent intent;
+        switch (v.getId()) {
+
+            case R.id.myroutes_btn:
+                intent = new Intent(this, RouteListActivity.class);
+                this.startActivity(intent);
+                break;
+
+            case R.id.track_btn:
+                String routeID = Utility.getRouteID();
+                if (!routeID.equalsIgnoreCase("NA")) {
+                    intent = new Intent(this, MapsActivity.class);
+                    intent.putExtra("ROUTEID", Utility.getRouteID());
+                    this.startActivity(intent);
+                }
+                break;
+
+            case R.id.startstop_btn:
+                if (startstop_btn.getText().toString().equalsIgnoreCase("Stop")) {
+                    stopLocationService();
+                    startstop_btn.setText("Start");
+                } else {
+                    if (ContextCompat.checkSelfPermission(
+                            getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(MainActivity.this,
+                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                REQUEST_CODE_LOCATION_PERMISSION);
+
+                    } else {
+                        startLocationService();
+                    }
+                    startstop_btn.setText("Stop");
+                }
+                break;
         }
     }
 
-    private void getRouteData() {
-        List<String[]> distinctRoutes = locationDBHelper.getRouteCoordinates("");
-        for (int i = 0; i < distinctRoutes.size(); i++) {
-            Log.d(TAG, "getData: " + distinctRoutes.get(i)[0]);
+    @Override
+    public void onCheckedChanged(RadioGroup group, int checkedId) {
+        switch (checkedId) {
+            case R.id.meterradio_btn:
+                mConvertionUnit = "meters";
+                Toast.makeText(MainActivity.this, "meterradio_btn ", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.kmradio_btn:
+                mConvertionUnit = "Kilometers";
+                Toast.makeText(MainActivity.this, "kmradio_btn ", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.milesradio_btn:
+                mConvertionUnit = "Miles";
+                Toast.makeText(MainActivity.this, "milesradio_btn ", Toast.LENGTH_SHORT).show();
+                break;
         }
     }
 }

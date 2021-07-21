@@ -4,13 +4,11 @@ public class LocationModel {
     private String tripId;
     private String mLatitude;
     private String mLongitude;
-    private String mTimestamp;
 
-    public LocationModel(String tripId, String mLatitude, String mLongitude, String mTimestamp) {
+    public LocationModel(String tripId, String mLatitude, String mLongitude) {
         this.tripId = tripId;
         this.mLatitude = mLatitude;
         this.mLongitude = mLongitude;
-        this.mTimestamp = mTimestamp;
     }
 
     public String getTripId() {
@@ -37,11 +35,4 @@ public class LocationModel {
         this.mLongitude = mLongitude;
     }
 
-    public String getmTimestamp() {
-        return mTimestamp;
-    }
-
-    public void setmTimestamp(String mTimestamp) {
-        this.mTimestamp = mTimestamp;
-    }
 }

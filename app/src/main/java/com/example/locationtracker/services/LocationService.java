@@ -1,4 +1,4 @@
-package com.example.locationtracker;
+package com.example.locationtracker.services;
 
 import android.Manifest;
 import android.app.NotificationChannel;
@@ -8,15 +8,10 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,18 +21,16 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.locationtracker.Database.LocationDBHelper;
 import com.example.locationtracker.Model.LocationModel;
-import com.google.android.gms.location.FusedLocationProviderClient;
+import com.example.locationtracker.R;
+import com.example.locationtracker.constants.LocationConstants;
+import com.example.locationtracker.utility.Utility;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 
-import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 public class LocationService extends Service {
     public static String SERVICE_MESSAGE = "Send Data From service";
@@ -48,26 +41,15 @@ public class LocationService extends Service {
         public void onLocationResult(@NonNull LocationResult locationResult) {
             super.onLocationResult(locationResult);
             if (locationResult != null && locationResult.getLocations() != null) {
-                //speed
                 double speed = locationResult.getLastLocation().getSpeed();
-                double a = 3.6 * (speed);
-                int kmhSpeed = (int) (Math.round(a));
-                //lat and longitude
-                String lattitude = String.valueOf(locationResult.getLastLocation().getLatitude());
+                String latitude = String.valueOf(locationResult.getLastLocation().getLatitude());
                 String longitude = String.valueOf(locationResult.getLastLocation().getLongitude());
-                //trackid and time
-                Calendar cal = Calendar.getInstance();
-                SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
-                String strDate = sdf.format(cal.getTime());
 
-                String timeMilli = String.valueOf(cal.getTimeInMillis());
-                LocationModel model = new LocationModel(strDate, lattitude, longitude, timeMilli);
+                LocationModel model = new LocationModel(Utility.getRouteIdFromPref(context), latitude, longitude);
 
-                //store in db
-                context = getApplicationContext();
-                //  insertLocationData(context, model);
-                sendMessageToUi(kmhSpeed);
-                Log.d("Location Service Lat", "onLocationResult: " + lattitude + " " + longitude + " " + timeMilli + " " + strDate + " " + kmhSpeed);
+                insertLocationData(context, model);
+                sendMessageToUi(speed);
+                Log.d("Location Service Lat", "onLocationResult: " + model.getmLatitude() + " " + model.getmLongitude() + " " + model.getTripId() + " " + speed);
             }
         }
     };
@@ -79,7 +61,7 @@ public class LocationService extends Service {
     }
 
     private void startLocationService() {
-        String channelId = "Location_notification_channel";
+        String channelId = "LOCATION_NOTIFICATION_CHANNEL";
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         Intent resultIntent = new Intent();
@@ -94,9 +76,9 @@ public class LocationService extends Service {
                 channelId
         );
         builder.setSmallIcon(R.drawable.ic_notify);
-        builder.setContentTitle("Location SErvice");
+        builder.setContentTitle("Tracking your route");
         builder.setDefaults(NotificationCompat.DEFAULT_ALL);
-        builder.setContentText("Running");
+        builder.setContentText("Tracking");
         builder.setContentIntent(pendingIntent);
         builder.setAutoCancel(false);
         builder.setPriority(NotificationCompat.PRIORITY_MAX);
@@ -124,26 +106,23 @@ public class LocationService extends Service {
         }
         LocationServices.getFusedLocationProviderClient(this)
                 .requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-        startForeground(Constants.LOCATION_SERVICE_ID, builder.build());
+        startForeground(LocationConstants.LOCATION_SERVICE_ID, builder.build());
     }
 
     private void stopLocationService() {
         LocationServices.getFusedLocationProviderClient(this)
                 .removeLocationUpdates(locationCallback);
         stopForeground(true);
-        stopSelf();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        context = getApplicationContext();
         if (intent != null) {
             String action = intent.getAction();
             if (action != null) {
-                if (action.equals(Constants.ACTION_START_SERVICE)) {
+                if (action.equals(LocationConstants.ACTION_START_SERVICE)) {
                     startLocationService();
-                } else if (action.equals(Constants.ACTION_STOP_SERVICE)) {
-                    stopLocationService();
-                    Log.d("TAG", "onStartCommand: Stopped service");
                 }
             }
         }
@@ -159,8 +138,7 @@ public class LocationService extends Service {
 
     private void sendMessageToUi(double speed) {
         Intent intent = new Intent(SERVICE_MESSAGE);
-        intent.putExtra("Speed", speed);
-
+        intent.putExtra("SPEED", speed);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
 

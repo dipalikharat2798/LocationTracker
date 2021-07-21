@@ -66,13 +66,12 @@ public class LocationDBHelper extends SQLiteOpenHelper {
             String sql = "INSERT INTO " + LOCATION_MASTER_TABLE + "(" + LOCATION_TRIP_ID + "," + LOCATION_LATITUDE + ","
                     + LOCATION_LONGITUDE + ","
                     + LOCATION_TIMESTAMP
-                    + ") VALUES (?,?,?,?)";
+                    + ") VALUES (?,?,?,datetime('now', 'localtime'))";
             SQLiteStatement stmt = db.compileStatement(sql);
             stmt.bindString(1, locationmodel.getTripId());
             stmt.bindString(2, locationmodel.getmLatitude() + "");
             stmt.bindString(3, locationmodel.getmLongitude() + "");
-            stmt.bindString(4, locationmodel.getmTimestamp() + "");
-
+//            stmt.bindString(4, locationmodel.getmTimestamp() + "");
 
             stmt.execute();
             stmt.clearBindings();
@@ -88,7 +87,7 @@ public class LocationDBHelper extends SQLiteOpenHelper {
         String query = null;
         String[] selectArgs = null;
         List<String[]> tableData = new ArrayList<>();
-        query = "SELECT DISTINCT " + LOCATION_TRIP_ID + " FROM " + LOCATION_MASTER_TABLE;
+        query = "SELECT DISTINCT " + LOCATION_TRIP_ID + " FROM " + LOCATION_MASTER_TABLE + " ORDER BY " + LOCATION_TRIP_ID + " DESC";
         selectArgs = null;
         Cursor cursor = db.rawQuery(query, selectArgs);
         while (cursor.moveToNext()) {
@@ -118,6 +117,11 @@ public class LocationDBHelper extends SQLiteOpenHelper {
         }
         return tableData;
     }
-
-
+    public boolean deleteDataFromLocationMaster(String routeId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = null;
+        query = " DELETE " + " FROM " + LOCATION_MASTER_TABLE + " WHERE " + LOCATION_TRIP_ID + " == '" + routeId + "'";
+        db.execSQL(query);
+        return true;
+    }
 }
