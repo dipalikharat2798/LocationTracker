@@ -2,11 +2,13 @@ package com.example.locationtracker.activities;
 
 import android.Manifest;
 import android.app.ActivityManager;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -73,6 +75,49 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         kmradio_btn = findViewById(R.id.kmradio_btn);
         meterradio_btn = findViewById(R.id.meterradio_btn);
         locationDBHelper = LocationDBHelper.getInstance(MainActivity.this);
+        int PERMISSION_ALL = 1;
+        String[] PERMISSIONS = {
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.SEND_SMS,
+                Manifest.permission.MODIFY_AUDIO_SETTINGS,
+                Manifest.permission.ACCESS_NOTIFICATION_POLICY
+        };
+
+        if (!hasPermissions(this, PERMISSIONS)) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
+        }
+
+
+//        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_SETTINGS) != PackageManager.PERMISSION_GRANTED){
+//            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_SETTINGS},3);
+//        }
+//        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_SECURE_SETTINGS) != PackageManager.PERMISSION_GRANTED){
+//            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_SECURE_SETTINGS},4);
+//        }
+        NotificationManager notificationManager =
+                (NotificationManager) MainActivity.this.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && !notificationManager.isNotificationPolicyAccessGranted()) {
+
+            Intent intent = new Intent(
+                    android.provider.Settings
+                            .ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+
+            startActivity(intent);
+        }
+    }
+
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     @Override
@@ -83,17 +128,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_CODE_LOCATION_PERMISSION && grantResults.length > 0) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startLocationService();
-            } else {
-                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        if (requestCode == REQUEST_CODE_LOCATION_PERMISSION && grantResults.length > 0) {
+//            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                startLocationService();
+//            } else {
+//                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//    }
 
     private boolean isLocationServiceRunning() {
         ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -141,19 +186,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(mReceiver);        //<-- Unregister to avoid memoryleak
     }
 
-//    private void getData() {
-//        List<String[]> distinctRoutes = locationDBHelper.getDistinctRoutes();
-//        for (int i = 0; i < distinctRoutes.size(); i++) {
-//            Log.d(TAG, "getData: " + distinctRoutes.get(i)[0]);
-//        }
-//    }
-//
-//    private void getRouteData() {
-//        List<String[]> distinctRoutes = locationDBHelper.getRouteCoordinates("");
-//        for (int i = 0; i < distinctRoutes.size(); i++) {
-//            Log.d(TAG, "getData: " + distinctRoutes.get(i)[0]);
-//        }
-//    }
 
     @Override
     public void onClick(View v) {
@@ -211,5 +243,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(MainActivity.this, "milesradio_btn ", Toast.LENGTH_SHORT).show();
                 break;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        speed_tv.setText("O");
     }
 }

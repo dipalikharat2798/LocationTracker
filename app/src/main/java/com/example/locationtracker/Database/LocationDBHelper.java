@@ -87,7 +87,8 @@ public class LocationDBHelper extends SQLiteOpenHelper {
         String query = null;
         String[] selectArgs = null;
         List<String[]> tableData = new ArrayList<>();
-        query = "SELECT DISTINCT " + LOCATION_TRIP_ID + " FROM " + LOCATION_MASTER_TABLE + " ORDER BY " + LOCATION_TRIP_ID + " DESC";
+        query = "SELECT DISTINCT " + LOCATION_TRIP_ID + " FROM " + LOCATION_MASTER_TABLE;
+        //SELECT DISTINCT " + LOCATION_TRIP_ID + " FROM " + LOCATION_MASTER_TABLE+ " ORDER BY " + LOCATION_TRIP_ID + " DESC"
         selectArgs = null;
         Cursor cursor = db.rawQuery(query, selectArgs);
         while (cursor.moveToNext()) {

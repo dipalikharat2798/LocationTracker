@@ -28,7 +28,10 @@ public class RouteListActivity extends AppCompatActivity {
         prepareData();
         recyclerView = findViewById(R.id.recycler1);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(this);
+        linearLayoutManager.setReverseLayout(true);
+        linearLayoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(linearLayoutManager);
         LocationListAdapter locationListAdapter = new LocationListAdapter(routeIdModalArrayList, RouteListActivity.this,locationDBHelper);
         recyclerView.setAdapter(locationListAdapter);
 

@@ -11,8 +11,7 @@ import java.util.Calendar;
 import static android.content.Context.MODE_PRIVATE;
 
 public class Utility {
-
-
+    
     public static void saveDataToPreferences(Context context) {
         SharedPreferences.Editor editor = context.getSharedPreferences(LocationConstants.LOCATION_PREF, MODE_PRIVATE).edit();
         editor.putString("ROUTEID", getRouteID());

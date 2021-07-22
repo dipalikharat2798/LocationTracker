@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.example.locationtracker.Database.LocationDBHelper;
 import com.example.locationtracker.R;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -80,7 +81,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .snippet("Lat")
         );
 
+        CameraUpdate myLocation = CameraUpdateFactory.newLatLngZoom(coordList.get(0),15);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(coordList.get(0)));
+        mMap.animateCamera(myLocation);
 
     }
 

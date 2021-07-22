@@ -5,13 +5,19 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Looper;
+import android.telephony.SmsManager;
+import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,18 +41,27 @@ import java.util.Calendar;
 public class LocationService extends Service {
     public static String SERVICE_MESSAGE = "Send Data From service";
     Context context;
+    double speed;
 
+    public double getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(double speed) {
+        this.speed = speed;
+    }
+
+    CallStateReceiver callStateReceiver;
     private LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(@NonNull LocationResult locationResult) {
             super.onLocationResult(locationResult);
             if (locationResult != null && locationResult.getLocations() != null) {
                 double speed = locationResult.getLastLocation().getSpeed();
+                setSpeed(speed);
                 String latitude = String.valueOf(locationResult.getLastLocation().getLatitude());
                 String longitude = String.valueOf(locationResult.getLastLocation().getLongitude());
-
                 LocationModel model = new LocationModel(Utility.getRouteIdFromPref(context), latitude, longitude);
-
                 insertLocationData(context, model);
                 sendMessageToUi(speed);
                 Log.d("Location Service Lat", "onLocationResult: " + model.getmLatitude() + " " + model.getmLongitude() + " " + model.getTripId() + " " + speed);
@@ -110,6 +125,10 @@ public class LocationService extends Service {
     }
 
     private void stopLocationService() {
+        if (callStateReceiver != null) {
+            unregisterReceiver(callStateReceiver);
+            callStateReceiver = null;
+        }
         LocationServices.getFusedLocationProviderClient(this)
                 .removeLocationUpdates(locationCallback);
         stopForeground(true);
@@ -123,6 +142,7 @@ public class LocationService extends Service {
             if (action != null) {
                 if (action.equals(LocationConstants.ACTION_START_SERVICE)) {
                     startLocationService();
+                    registerCallStateReceiver();
                 }
             }
         }
@@ -145,6 +165,65 @@ public class LocationService extends Service {
     private void insertLocationData(Context context, LocationModel locationmodel) {
         LocationDBHelper locationDBHelper = LocationDBHelper.getInstance(context);
         locationDBHelper.insertDataToLocationMaster(locationmodel);
+    }
+
+    private void registerCallStateReceiver() {
+        callStateReceiver = new CallStateReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
+        registerReceiver(callStateReceiver, intentFilter);
+    }
+
+    public class CallStateReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            try {
+                System.out.println("Receiver start");
+                String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
+                String incomingNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
+                Log.d("TAG", "onReceive number: " + incomingNumber);
+                if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
+                    Toast.makeText(context, "Incoming Call State", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Ringing State Number is -" + incomingNumber, Toast.LENGTH_SHORT).show();
+                    //  sendMessage(TelephonyManager.EXTRA_INCOMING_NUMBER);
+                    if (getSpeed() > 23) {
+//                        AudioManager audio = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+//                        audio.setRingerMode(0);
+                        makeSilent();
+                        Log.d("TAG", "onReceive number: " + incomingNumber.substring(3));
+                        sendMessage(incomingNumber.substring(3));
+                    }
+                }
+                if ((state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK))) {
+                    Toast.makeText(context, "Call Received State", Toast.LENGTH_SHORT).show();
+                }
+                if (state.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
+                    Toast.makeText(context, "Call Idle State", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void makeSilent() {
+        AudioManager am;
+        am = (AudioManager) getBaseContext().getSystemService(Context.AUDIO_SERVICE);
+//For Normal mode
+      //  am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+//For Silent mode
+        am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+//For Vibrate mode
+       // am.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+
+    }
+
+    private void sendMessage(String incomingNumber) {
+        SmsManager smsManager = SmsManager.getDefault();
+        String message = "I am driving. Will call you later";
+        smsManager.sendTextMessage(incomingNumber, null, message, null, null);
     }
 
 }
