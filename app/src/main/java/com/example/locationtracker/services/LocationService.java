@@ -211,11 +211,11 @@ public class LocationService extends Service {
     private void makeSilent() {
         AudioManager am;
         am = (AudioManager) getBaseContext().getSystemService(Context.AUDIO_SERVICE);
-//For Normal mode
+       //For Normal mode
       //  am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-//For Silent mode
+      //For Silent mode
         am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-//For Vibrate mode
+      //For Vibrate mode
        // am.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
 
     }

@@ -71,7 +71,6 @@ public class LocationDBHelper extends SQLiteOpenHelper {
             stmt.bindString(1, locationmodel.getTripId());
             stmt.bindString(2, locationmodel.getmLatitude() + "");
             stmt.bindString(3, locationmodel.getmLongitude() + "");
-//            stmt.bindString(4, locationmodel.getmTimestamp() + "");
 
             stmt.execute();
             stmt.clearBindings();
@@ -88,7 +87,6 @@ public class LocationDBHelper extends SQLiteOpenHelper {
         String[] selectArgs = null;
         List<String[]> tableData = new ArrayList<>();
         query = "SELECT DISTINCT " + LOCATION_TRIP_ID + " FROM " + LOCATION_MASTER_TABLE;
-        //SELECT DISTINCT " + LOCATION_TRIP_ID + " FROM " + LOCATION_MASTER_TABLE+ " ORDER BY " + LOCATION_TRIP_ID + " DESC"
         selectArgs = null;
         Cursor cursor = db.rawQuery(query, selectArgs);
         while (cursor.moveToNext()) {

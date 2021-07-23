@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentActivity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.locationtracker.Database.LocationDBHelper;
 import com.example.locationtracker.R;
@@ -49,11 +50,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         ArrayList<LatLng> coordList = new ArrayList<LatLng>();
 
-        // getRouteData(recivedRouteId);
-//        coordList.add(new LatLng(0, 0));
-//        coordList.add(new LatLng(1, 1));
-//        coordList.add(new LatLng(2, 2));
-
         List<String[]> distinctRoutes = locationDBHelper.getRouteCoordinates(recivedRouteId);
         for (int i = 0; i < distinctRoutes.size(); i++) {
             Log.d(TAG, "getData: Lat " + distinctRoutes.get(i)[0] + "Long"+ distinctRoutes.get(i)[1]);
@@ -63,7 +59,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         for (int i = 0; i < coordList.size() - 1; i++) {
             LatLng src = coordList.get(i);
             LatLng dest = coordList.get(i + 1);
-
             // mMap is the Map Object
             Polyline line = mMap.addPolyline(
                     new PolylineOptions().add(
@@ -72,18 +67,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     ).width(5).color(Color.RED).geodesic(true)
             );
         }
+        if (! coordList.isEmpty()) {
+            marker = mMap.addMarker(new MarkerOptions().
+                    position(coordList.get(0))
+                    .title("My Marker")
+                    .draggable(true)
+                    .snippet("Lat")
+            );
 
-
-        marker = mMap.addMarker(new MarkerOptions().
-                position(coordList.get(0))
-                .title("My Marker")
-                .draggable(true)
-                .snippet("Lat")
-        );
-
-        CameraUpdate myLocation = CameraUpdateFactory.newLatLngZoom(coordList.get(0),15);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(coordList.get(0)));
-        mMap.animateCamera(myLocation);
+            CameraUpdate myLocation = CameraUpdateFactory.newLatLngZoom(coordList.get(0), 15);
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(coordList.get(0)));
+            mMap.animateCamera(myLocation);
+        }else {
+//            LatLng m1 = new LatLng(Double.parseDouble(distinctRoutes.get(0)[0]),Double.parseDouble(distinctRoutes.get(0)[1]));
+//            marker = mMap.addMarker(new MarkerOptions().
+//                    position(m1)
+//                    .title("My Marker")
+//                    .draggable(true)
+//                    .snippet("Lat"));
+            Toast.makeText(this, "Empty", Toast.LENGTH_SHORT).show();
+        }
 
     }
 
