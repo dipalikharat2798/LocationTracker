@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
@@ -18,8 +19,9 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -30,8 +32,6 @@ import com.example.locationtracker.constants.LocationConstants;
 import com.example.locationtracker.services.LocationService;
 import com.example.locationtracker.utility.Utility;
 
-import java.util.List;
-
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, RadioGroup.OnCheckedChangeListener {
     private static final String TAG = "MainActivity";
     TextView speed_tv;
@@ -41,8 +41,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final int REQUEST_CODE_LOCATION_PERMISSION = 1;
     double speed;
     LocationDBHelper locationDBHelper;
-    String mConvertionUnit="";
-    String RouteId="";
+    String mConvertionUnit = "";
+    String RouteId = "";
+    String location_usertype="";
+
+    public String getLocation_usertype() {
+        return location_usertype;
+    }
+
+    public void setLocation_usertype(String location_usertype) {
+        this.location_usertype = location_usertype;
+    }
 
     public String getRouteId() {
         return RouteId;
@@ -148,14 +157,66 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void startLocationService() {
-        if (!isLocationServiceRunning()) {
+        if (!isLocationServiceRunning() && location_usertype!=null) {
             Utility.saveDataToPreferences(MainActivity.this);
             setRouteId(Utility.getRouteIdFromPref(MainActivity.this));
             Intent intent = new Intent(getApplicationContext(), LocationService.class);
+            intent.putExtra("userType",getLocation_usertype());
             intent.setAction(LocationConstants.ACTION_START_SERVICE);
             startService(intent);
             Toast.makeText(this, "Location Service started", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void chooseOption() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.select_option, null);
+        builder.setCancelable(false);
+        builder.setView(dialogView);
+        CardView imageViewwalk = dialogView.findViewById(R.id.walkBtn);
+        CardView imageViewbike = dialogView.findViewById(R.id.bikeBtn);
+        CardView imageViewcar = dialogView.findViewById(R.id.carBtn);
+        CardView imageViewtrain = dialogView.findViewById(R.id.trainBtn);
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        imageViewwalk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setLocation_usertype("walk");
+                alertDialog.dismiss();
+                Toast.makeText(MainActivity.this, "walking", Toast.LENGTH_SHORT).show();
+                startLocationService();
+            }
+        });
+        imageViewbike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setLocation_usertype("bike");
+                alertDialog.dismiss();
+                Toast.makeText(MainActivity.this, "Bike", Toast.LENGTH_SHORT).show();
+                startLocationService();
+            }
+        });
+        imageViewcar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setLocation_usertype("car");
+                alertDialog.dismiss();
+                Toast.makeText(MainActivity.this, "car", Toast.LENGTH_SHORT).show();
+                startLocationService();
+            }
+        });
+        imageViewtrain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setLocation_usertype("train");
+                alertDialog.dismiss();
+                Toast.makeText(MainActivity.this, "train", Toast.LENGTH_SHORT).show();
+                startLocationService();
+            }
+        });
+
     }
 
     private void stopLocationService() {
@@ -191,7 +252,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.track_btn:
-              //  String routeID = Utility.getRouteID();
+                //  String routeID = Utility.getRouteID();
                 if (!getRouteId().equalsIgnoreCase("NA")) {
                     intent = new Intent(this, MapsActivity.class);
                     intent.putExtra("ROUTEID", getRouteId());
@@ -212,7 +273,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 REQUEST_CODE_LOCATION_PERMISSION);
 
                     } else {
-                        startLocationService();
+                      // startLocationService();
+                        chooseOption();
                     }
                     startstop_btn.setText("Stop");
                 }

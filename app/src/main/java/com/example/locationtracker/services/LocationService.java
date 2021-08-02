@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
 import android.telephony.SmsManager;
@@ -42,6 +43,24 @@ public class LocationService extends Service {
     public static String SERVICE_MESSAGE = "Send Data From service";
     Context context;
     double speed;
+    int interval = 0;
+    int fastestInterval = 0;
+
+    public int getInterval() {
+        return interval;
+    }
+
+    public void setInterval(int interval) {
+        this.interval = interval;
+    }
+
+    public int getFastestInterval() {
+        return fastestInterval;
+    }
+
+    public void setFastestInterval(int fastestInterval) {
+        this.fastestInterval = fastestInterval;
+    }
 
     public double getSpeed() {
         return speed;
@@ -111,8 +130,8 @@ public class LocationService extends Service {
             }
         }
         LocationRequest locationRequest = LocationRequest.create()
-                .setInterval(4000)                                     //means - set the interval in which you want to get locations
-                .setFastestInterval(2000)                             //means - if a location is available sooner you can get it (i.e. another app is using the location services).
+                .setInterval(getInterval())                                     //means - set the interval in which you want to get locations
+                .setFastestInterval(getFastestInterval())                             //means - if a location is available sooner you can get it (i.e. another app is using the location services).
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setMaxWaitTime(100);
 
@@ -137,8 +156,11 @@ public class LocationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         context = getApplicationContext();
+
         if (intent != null) {
             String action = intent.getAction();
+            String user = intent.getStringExtra("userType");
+            setTime(user);
             if (action != null) {
                 if (action.equals(LocationConstants.ACTION_START_SERVICE)) {
                     startLocationService();
@@ -147,6 +169,29 @@ public class LocationService extends Service {
             }
         }
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    private void setTime(String user) {
+        switch (user) {
+            case "walk":
+                setInterval(10000);//10sec
+                setFastestInterval(8000);
+                break;
+            case "bike":
+                setInterval(60000);//1min
+                setFastestInterval(30000);
+                break;
+            case "car":
+                setInterval(4*60000);//4min
+                setFastestInterval(4*20000);
+                break;
+            case "train":
+                setInterval(6*60000);//6min
+                setFastestInterval(6*20000);
+                break;
+            default:
+                break;
+        }
     }
 
 
@@ -211,12 +256,12 @@ public class LocationService extends Service {
     private void makeSilent() {
         AudioManager am;
         am = (AudioManager) getBaseContext().getSystemService(Context.AUDIO_SERVICE);
-       //For Normal mode
-      //  am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-      //For Silent mode
+        //For Normal mode
+        //  am.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+        //For Silent mode
         am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-      //For Vibrate mode
-       // am.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+        //For Vibrate mode
+        // am.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
 
     }
 
