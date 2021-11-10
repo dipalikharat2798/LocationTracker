@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int PERMISSION_ALL = 1;
         String[] PERMISSIONS = {
                 Manifest.permission.ACCESS_FINE_LOCATION,
-                android.Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.READ_PHONE_STATE,
                 Manifest.permission.SEND_SMS,
                 Manifest.permission.MODIFY_AUDIO_SETTINGS,
                 Manifest.permission.ACCESS_NOTIFICATION_POLICY
