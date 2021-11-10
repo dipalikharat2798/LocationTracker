@@ -50,6 +50,24 @@ public class LocationService extends Service {
     public void setSpeed(double speed) {
         this.speed = speed;
     }
+    int interval = 0;
+    int fastestInterval = 0;
+
+    public int getInterval() {
+        return interval;
+    }
+
+    public void setInterval(int interval) {
+        this.interval = interval;
+    }
+
+    public int getFastestInterval() {
+        return fastestInterval;
+    }
+
+    public void setFastestInterval(int fastestInterval) {
+        this.fastestInterval = fastestInterval;
+    }
 
     CallStateReceiver callStateReceiver;
     private LocationCallback locationCallback = new LocationCallback() {
@@ -111,8 +129,8 @@ public class LocationService extends Service {
             }
         }
         LocationRequest locationRequest = LocationRequest.create()
-                .setInterval(4000)                                     //means - set the interval in which you want to get locations
-                .setFastestInterval(2000)                             //means - if a location is available sooner you can get it (i.e. another app is using the location services).
+                .setInterval(getInterval())                                     //means - set the interval in which you want to get locations
+                .setFastestInterval(getFastestInterval())                           //means - if a location is available sooner you can get it (i.e. another app is using the location services).
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setMaxWaitTime(100);
 
@@ -139,6 +157,8 @@ public class LocationService extends Service {
         context = getApplicationContext();
         if (intent != null) {
             String action = intent.getAction();
+            String user = intent.getStringExtra("userType");
+            setTime(user);
             if (action != null) {
                 if (action.equals(LocationConstants.ACTION_START_SERVICE)) {
                     startLocationService();
@@ -155,7 +175,28 @@ public class LocationService extends Service {
         stopLocationService();
         super.onDestroy();
     }
-
+    private void setTime(String user) {
+        switch (user) {
+            case "walk":
+                setInterval(10000);//10sec
+                setFastestInterval(8000);
+                break;
+            case "bike":
+                setInterval(60000);//1min
+                setFastestInterval(30000);
+                break;
+            case "car":
+                setInterval(4*60000);//4min
+                setFastestInterval(4*20000);
+                break;
+            case "train":
+                setInterval(6*60000);//6min
+                setFastestInterval(6*20000);
+                break;
+            default:
+                break;
+        }
+    }
     private void sendMessageToUi(double speed) {
         Intent intent = new Intent(SERVICE_MESSAGE);
         intent.putExtra("SPEED", speed);

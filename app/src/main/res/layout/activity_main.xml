@@ -6,32 +6,82 @@
     android:layout_height="match_parent"
     tools:context=".activities.MainActivity">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/my_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/purple_500"
+            app:subtitleTextColor="@color/white"
+            app:titleTextColor="@color/white">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="12dp"
+                android:src="@drawable/location" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="@font/spartan_bold"
+                android:gravity="left"
+                android:text="LocationTracker"
+                android:textColor="@color/white"
+                android:textSize="20dp" />
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/appbar"
         android:layout_centerInParent="true"
         android:layout_margin="8dp"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/speed_tv"
-            android:layout_width="244dp"
-            android:layout_height="224dp"
-            android:layout_gravity="center"
-            android:layout_margin="8dp"
-            android:background="@drawable/firstbg"
-            android:gravity="center"
-            android:text="0"
-            android:textColor="@color/black"
-            android:textSize="40dp"
-            android:textStyle="bold" />
+        <androidx.cardview.widget.CardView
+            android:id="@+id/setTime_btn"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="20dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="4dp"
+            app:cardMaxElevation="6dp"
+            app:cardPreventCornerOverlap="true"
+            app:cardUseCompatPadding="true">
+
+            <TextView
+                android:id="@+id/speed_tv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:background="@drawable/firstbg"
+                android:gravity="center"
+                android:text="0"
+                android:textColor="@color/purple_500"
+                android:textSize="40dp"
+                android:textStyle="bold" />
+        </androidx.cardview.widget.CardView>
 
         <RadioGroup
             android:id="@+id/radio_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/view_below"
-            android:layout_margin="10dp"
+            android:layout_marginTop="20dp"
             android:orientation="horizontal"
             android:weightSum="3">
 
@@ -59,11 +109,10 @@
         </RadioGroup>
 
 
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="4dp"
+            android:layout_marginTop="20dp"
             android:orientation="horizontal"
             android:weightSum="2">
 
@@ -97,7 +146,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="4dp"
+            android:layout_marginTop="20dp"
             android:padding="8dp"
             android:text="start"
             android:textSize="20dp" />
