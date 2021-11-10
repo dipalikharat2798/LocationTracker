@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.locationtracker.Database.LocationDBHelper;
 import com.example.locationtracker.Model.RouteIdListModel;
 import com.example.locationtracker.R;
+import com.example.locationtracker.activities.DistanceActivity;
 import com.example.locationtracker.activities.MapsActivity;
 
 import java.util.ArrayList;
@@ -44,6 +45,14 @@ public class LocationListAdapter extends RecyclerView.Adapter<LocationListAdapte
 //        holder.totalDistance_tv.setText(routeIdListModel.getToatalDistance());
         holder.routeId_tv.setText(routeIdListModel.getRouteId());
 
+//        holder.itemView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(context, DistanceActivity.class);
+//                intent.putExtra("ROUTEID", routeIdListModel.getRouteId());
+//                context.startActivity(intent);
+//            }
+//        });
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

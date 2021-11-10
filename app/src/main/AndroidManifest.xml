@@ -5,13 +5,12 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.SEND_SMS"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" ></uses-permission>
-    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" ></uses-permission>
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" ></uses-permission>
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
-
 
     <application
         android:allowBackup="true"
@@ -20,7 +19,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LocationTracker">
-        <activity android:name=".activities.RouteListActivity"></activity>
+        <activity android:name=".activities.DistanceActivity"></activity>
+        <activity android:name=".activities.RouteListActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

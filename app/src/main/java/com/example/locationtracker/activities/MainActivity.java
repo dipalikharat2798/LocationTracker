@@ -42,6 +42,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     double speed;
     LocationDBHelper locationDBHelper;
     String mConvertionUnit="";
+    String RouteId="";
+
+    public String getRouteId() {
+        return RouteId;
+    }
+
+    public void setRouteId(String routeId) {
+        RouteId = routeId;
+    }
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -75,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         kmradio_btn = findViewById(R.id.kmradio_btn);
         meterradio_btn = findViewById(R.id.meterradio_btn);
         locationDBHelper = LocationDBHelper.getInstance(MainActivity.this);
+        mConvertionUnit = "Miles";
         int PERMISSION_ALL = 1;
         String[] PERMISSIONS = {
                 Manifest.permission.ACCESS_FINE_LOCATION,
@@ -88,13 +98,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         }
 
-
-//        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_SETTINGS) != PackageManager.PERMISSION_GRANTED){
-//            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_SETTINGS},3);
-//        }
-//        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_SECURE_SETTINGS) != PackageManager.PERMISSION_GRANTED){
-//            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_SECURE_SETTINGS},4);
-//        }
         NotificationManager notificationManager =
                 (NotificationManager) MainActivity.this.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -128,18 +131,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        if (requestCode == REQUEST_CODE_LOCATION_PERMISSION && grantResults.length > 0) {
-//            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                startLocationService();
-//            } else {
-//                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
-//            }
-//        }
-//    }
-
     private boolean isLocationServiceRunning() {
         ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         if (activityManager != null) {
@@ -159,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void startLocationService() {
         if (!isLocationServiceRunning()) {
             Utility.saveDataToPreferences(MainActivity.this);
+            setRouteId(Utility.getRouteIdFromPref(MainActivity.this));
             Intent intent = new Intent(getApplicationContext(), LocationService.class);
             intent.setAction(LocationConstants.ACTION_START_SERVICE);
             startService(intent);
@@ -170,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (isLocationServiceRunning()) {
             Intent intent = new Intent(getApplicationContext(), LocationService.class);
             stopService(intent);
+            setRouteId("NA");
             Toast.makeText(this, "Location Service stopped", Toast.LENGTH_SHORT).show();
         }
     }
@@ -198,10 +191,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.track_btn:
-                String routeID = Utility.getRouteID();
-                if (!routeID.equalsIgnoreCase("NA")) {
+              //  String routeID = Utility.getRouteID();
+                if (!getRouteId().equalsIgnoreCase("NA")) {
                     intent = new Intent(this, MapsActivity.class);
-                    intent.putExtra("ROUTEID", Utility.getRouteID());
+                    intent.putExtra("ROUTEID", getRouteId());
                     this.startActivity(intent);
                 }
                 break;
