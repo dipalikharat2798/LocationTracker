@@ -67,7 +67,7 @@ public class LocationListAdapter extends RecyclerView.Adapter<LocationListAdapte
             public void onClick(View v) {
                 AlertDialog.Builder alertDialogue = new AlertDialog.Builder(context);
                 alertDialogue
-                        .setTitle("Delete RouteDAta")
+                        .setTitle("Delete RouteData")
                         .setMessage("Are you sure?")
                         .setIcon(R.drawable.ic_delete)
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {

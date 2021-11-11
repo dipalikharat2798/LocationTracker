@@ -50,8 +50,8 @@ public class LocationService extends Service {
     public void setSpeed(double speed) {
         this.speed = speed;
     }
-    int interval = 0;
-    int fastestInterval = 0;
+    int interval = 4000;
+    int fastestInterval = 2000;
 
     public int getInterval() {
         return interval;
@@ -158,13 +158,14 @@ public class LocationService extends Service {
         if (intent != null) {
             String action = intent.getAction();
             String user = intent.getStringExtra("userType");
-            setTime(user);
+          //  setTime(user);
             if (action != null) {
                 if (action.equals(LocationConstants.ACTION_START_SERVICE)) {
                     startLocationService();
                     registerCallStateReceiver();
                 }
             }
+            setTime(user);
         }
         return super.onStartCommand(intent, flags, startId);
     }

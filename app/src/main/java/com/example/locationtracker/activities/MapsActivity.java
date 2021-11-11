@@ -85,7 +85,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                    .title("My Marker")
 //                    .draggable(true)
 //                    .snippet("Lat"));
-            Toast.makeText(this, "Empty", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Currently route is not tracking, click start" +
+                    "'", Toast.LENGTH_SHORT).show();
         }
 
     }
